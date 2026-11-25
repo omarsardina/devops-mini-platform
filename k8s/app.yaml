@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: mini-api
-          image: mini-api:v1
+          image: mini-api:v2
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
