@@ -1,0 +1,38 @@
+---
+- name: Configure DevOps Mini-Platform Server
+  hosts: platform_servers
+  become: false
+  vars:
+    app_user: devops
+    app_dir: /opt/devops-mini-platform
+
+  tasks:
+    - name: Ensure dedicated devops user exists
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        shell: /bin/bash
+        create_home: true
+        state: present
+
+    - name: Create platform directory with proper ownership
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0755"
+
+    - name: Deploy platform configuration file
+      ansible.builtin.copy:
+        dest: "{{ app_dir }}/platform.conf"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0644"
+        content: |
+          PLATFORM_NAME=devops-mini-platform
+          ENVIRONMENT=staging
+          MANAGED_BY=ansible
+
+    - name: Verify server configuration
+      ansible.builtin.debug:
+        msg: "Server is configured! Directory {{ app_dir }} is ready for user {{ app_user }}."
